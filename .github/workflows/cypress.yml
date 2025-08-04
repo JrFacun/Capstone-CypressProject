@@ -20,5 +20,5 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run AutomationExercise Tests (headed)
+      - name: Run Cypress tests (headed)
         run: npm run AutomationExercise-headed

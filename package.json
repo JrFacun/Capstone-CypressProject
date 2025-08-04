@@ -4,9 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-
-    "AutomationExercise-headed": "cypress run --headed --browser chrome --spec 'cypress/e2e/features/Register.cy.js'"
+    "AutomationExercise-headed": "npx cypress run --headed --browser chrome --spec 'cypress/e2e/features/Register.cy.js'"
   },
   "repository": {
     "type": "git",
