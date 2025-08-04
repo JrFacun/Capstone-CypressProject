@@ -1,4 +1,6 @@
 
+///<reference types="cypress" />
+
 describe('Login Test', { testIsolation: false }, () => {
 
     it('should successfully login using fixture credentials', () => {
