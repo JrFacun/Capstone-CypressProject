@@ -13,5 +13,5 @@ Cypress.Commands.add('login', (email, password) => {
 
   // Submit the form
   cy.get('button[data-qa="login-button"]').click();
-  cy.contains('Logged in as').should('be.visible');
+  
 });

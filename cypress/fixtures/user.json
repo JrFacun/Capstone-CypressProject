@@ -23,5 +23,33 @@
             "Zipcode": "1000",
             "MobileNumber": "0639219924"
         }
+    },
+     {
+        "Title": "Mr.",
+        "Name": "James Cruz",
+        "Email": "nonexistent@example.com",
+        "Password": "wrongpass",
+        "DateOfBirth": {
+            "Day": "10",
+            "Month": "May",
+            "Year": "1995"
+        },
+        "Newsletter": true,
+        "Offers": true,
+        "AddressInfo": {
+            "FirstName": "James",
+            "LastName": "Cruz",
+            "Company": "Vertere Global Solutions",
+            "Address1": "Salcedo Village, 8/F Adamson Centre, 121 L.P. Leviste Street",
+            "Address2": "Apt 456",
+            "Country": "United States",
+            "State": "Philippines",
+            "City": "Makati",
+            "Zipcode": "1000",
+            "MobileNumber": "0639219924"
+        }
     }
+
 ]
+
+   
