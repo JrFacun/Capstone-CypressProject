@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "AutomationExercise-headed": "npx cypress run --headed --browser chrome --spec 'cypress/e2e/features/Register.cy.js'"
+    "AutomationExercise-headed": "npx cypress run --spec 'cypress/e2e/features/Register.cy.js' --browser chrome --headed"
   },
   "repository": {
     "type": "git",

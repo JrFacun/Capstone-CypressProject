@@ -1,3 +1,5 @@
+name: Cypress Tests
+
 on:
   push:
     branches: [main]
@@ -20,5 +22,9 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run Cypress tests (headed)
-        run: npm run AutomationExercise-headed
+      - name: Run Cypress tests (headed Chrome)
+        uses: cypress-io/github-action@v6
+        with:
+          start: npm run AutomationExercise-headed
+          browser: chrome
+          headed: true
