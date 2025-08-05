@@ -15,3 +15,16 @@ Cypress.Commands.add('login', (email, password) => {
   cy.get('button[data-qa="login-button"]').click();
   
 });
+
+//Screnshot 
+const dayjs = require('dayjs');
+//Create a global variable for testCaseTitle ; add "let testCaseTitle;" to initial line of 
+// add the following snippet in the describe block and before the first it block 
+/*   beforeEach(function () {
+    testCaseTitle = this.currentTest.title;
+  }); */
+Cypress.Commands.add('snapshot', (testCaseTitle) =>{
+    const now = dayjs().format('DD-MM-YYYYhhmmss')
+    cy.screenshot("/"+testCaseTitle+"/"+testCaseTitle +' ' +now);
+
+})
