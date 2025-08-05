@@ -17,6 +17,20 @@ Cypress.Commands.add('login', (email, password) => {
 });
 
 
+//Screnshot 
+const dayjs = require('dayjs');
+//Create a global variable for testCaseTitle ; add "let testCaseTitle;" to initial line of 
+// add the following snippet in the describe block and before the first it block 
+/*   beforeEach(function () {
+    testCaseTitle = this.currentTest.title;
+  }); */
+Cypress.Commands.add('snapshot', (testCaseTitle) => {
+  const now = dayjs().format('DD-MM-YYYYhhmmss')
+  cy.screenshot("/" + testCaseTitle + "/" + testCaseTitle + ' ' + now);
+
+})
+
+//Search Product
 Cypress.Commands.add('searchProduct', (keyword) => {
   /*
       Search for a product using the search bar
@@ -41,45 +55,36 @@ Cypress.Commands.add('searchProduct', (keyword) => {
   });
 });
 
-Cypress.Commands.add('filterByCategory', (url1, url2, category, subcategory) => {
-  cy.get(`a[href="#${url1}"]`).click().then(() => {
-    cy.get(`a[href="/category_products/${url2}"]`).click().then(() => {
+// Filter Products
+Cypress.Commands.add('filterByCategory', (cat, subcat, subcatname) => {
+  cy.get(`a[href="#${cat}"]`).click().then(() => {
+    cy.get(`a[href="/category_products/${subcat}"]`).click().then(() => {
       cy.request({
-        method: 'POST',
-        url: 'https://automationexercise.com/api/searchProduct',
-        form: true,
-        body: { search_product: 'Dress' },
+        method: 'GET',
+        url: 'https://automationexercise.com/api/productsList',
+        form: true
       }).then((response) => {
         const data = JSON.parse(response.body);
-        const dresses = data.products.filter(p => p.category.usertype.usertype === category && p.category.category === subcategory);
-
+        const filtered = data.products.filter(p => p.category.usertype.usertype === cat && p.category.category === subcatname);
+        cy.log(JSON.stringify(filtered));
         // Verify if each product is displayed and matches the value of the name based on the filtered request
-        for (let i = 0; i < dresses.length; i++) {
+        for (let i = 0; i < filtered.length; i++) {
           var selector = i + 3;
-          cy.get(`.features_items > div:nth-child(${selector}) > .product-image-wrapper > .single-products > .productinfo > p`).should('contain', dresses[i].name);
-          cy.log(dresses[i].name);
+          cy.get(`.features_items > div:nth-child(${selector}) > .product-image-wrapper > .single-products > .productinfo > p`).should('contain', filtered[i].name);
+          cy.log(filtered[i].name);
         }
-
-        // Now you can assert each one
-        // dresses.forEach((product) => {
-        //   cy.get('.features_items .productinfo > p').should('contain', product.name);
-        // });
       });
     });
   });
-
-
 });
 
-//Screnshot 
-const dayjs = require('dayjs');
-//Create a global variable for testCaseTitle ; add "let testCaseTitle;" to initial line of 
-// add the following snippet in the describe block and before the first it block 
-/*   beforeEach(function () {
-    testCaseTitle = this.currentTest.title;
-  }); */
-Cypress.Commands.add('snapshot', (testCaseTitle) =>{
-    const now = dayjs().format('DD-MM-YYYYhhmmss')
-    cy.screenshot("/"+testCaseTitle+"/"+testCaseTitle +' ' +now);
+Cypress.Commands.add('addAProductToCart', () => {
+  // Adds the first product displayed in Products Page
+  cy.clearCookies();
+  cy.visit('https://automationexercise.com/products')
+  cy.get('.title').should('contain', "All Products")
+  cy.title().should('be.equal', 'Automation Exercise - All Products')
 
-})
+  cy.get(':nth-child(3) > .product-image-wrapper > .single-products > .productinfo > .btn').click()
+  cy.get('.modal-footer > .btn').click()
+});

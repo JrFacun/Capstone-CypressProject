@@ -1,0 +1,44 @@
+{
+    "category": {
+        "women": {
+            "name": "Women",
+            "dress": {
+                "index": 1,
+                "name": "Dress"
+            },
+            "tops": {
+                "index": 2,
+                "name": "Tops"
+            },
+            "saree": {
+                "index": 7,
+                "name": "Saree"
+            }
+        },
+        "men": {
+            "name": "Men",
+            "tshirts": {
+                "index": 3,
+                "name": "Tshirts"
+            },
+            "jeans": {
+                "index": 6,
+                "name": "Jeans"
+            }
+        },
+        "kids": {
+            "name": "Kids",
+            "dress": {
+                "index": 4,
+                "name": "Dress"
+            },
+            "tnj": {
+                "index": 5,
+                "name": "Tops & Shirts"
+            }
+        }
+    },
+    "brand": {
+
+    }
+}
