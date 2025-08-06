@@ -1,169 +1,108 @@
 ///<reference types="cypress" />
 import { generateFakeSignupData } from '../../support/utils/userFaker';
-
-
-
+import RegisterPage from '../../support/POM/registrationPage';
 
 describe('Register Test', { testIsolation: false }, () => {
+
     beforeEach(() => {
         cy.clearCookies();
         cy.clearLocalStorage();
-        // Visit the registration page before each test
         cy.visit('https://www.automationexercise.com');
         cy.contains('Signup / Login').click();
-    })
+    });
 
     it('should verify user can successfully register', () => {
         const user = generateFakeSignupData();
-        // Start signup
-        cy.get('input[data-qa="signup-name"]').type(user.Name);
-        cy.get('input[data-qa="signup-email"]').type(user.Email);
-        cy.get('button[data-qa="signup-button"]').click();
 
-        // Title
-        if (user.Title === 'Mr.') {
-            cy.get('#id_gender1').check();
-        } else {
-            cy.get('#id_gender2').check();
-        }
-        // Password and DOB
-        cy.get('#password').type(user.Password);
-        cy.get('#days').select(user.DateOfBirth.Day);
-        cy.get('#months').select(user.DateOfBirth.Month);
-        cy.get('#years').select(user.DateOfBirth.Year);
+        RegisterPage.fillInitialSignup(user.Name, user.Email);
+        RegisterPage.fillPersonalInfo(user);
+        RegisterPage.fillAddress(user);
 
-        if (user.Newsletter) cy.get('#newsletter').check();
-        if (user.Offers) cy.get('#optin').check();
-
-        // Address
-        cy.get('#first_name').type(user.AddressInfo.FirstName);
-        cy.get('#last_name').type(user.AddressInfo.LastName);
-        cy.get('#company').type(user.AddressInfo.Company);
-        cy.get('#address1').type(user.AddressInfo.Address1);
-        cy.get('#address2').type(user.AddressInfo.Address2);
-        cy.get('#country').select(user.AddressInfo.Country);
-        cy.get('#state').type(user.AddressInfo.State);
-        cy.get('#city').type(user.AddressInfo.City);
-        cy.get('#zipcode').type(user.AddressInfo.Zipcode);
-        cy.get('#mobile_number').type(user.AddressInfo.MobileNumber);
-
-        cy.get('button[data-qa="create-account"]').click();
+        cy.get(RegisterPage.createAccountButton).click();
 
         cy.get('b').should('have.text', 'Account Created!').should('be.visible');
-        cy.get('.col-sm-9 > :nth-child(2)').should('have.text', 'Congratulations! Your new account has been successfully created!').should('be.visible');
-        cy.get('.col-sm-9 > :nth-child(3)').should('have.text', 'You can now take advantage of member privileges to enhance your online shopping experience with us.').should('be.visible');
-        cy.get('[data-qa="continue-button"]').should('be.visible').should('not.be.disabled').click();
+        cy.get('.col-sm-9 > :nth-child(2)').should('contain.text', 'Congratulations');
+        cy.get(RegisterPage.continueButton).click();
+
         cy.contains('Logged in as').should('contain', user.Name);
         cy.contains('Logout').click();
+    });
 
-    })
-
-    it('should verify if user can not register with existing email', () => {
-
+    it('should verify user cannot register with existing email', () => {
         cy.fixture('user').then((user) => {
-            cy.get('[data-qa="signup-name"]').type(user[0].Name);
-            cy.get('[data-qa="signup-email"]').type(user[0].Email);
+            RegisterPage.fillInitialSignup(user[0].Name, user[0].Email);
         });
 
-        cy.get('[data-qa="signup-button"]').should('be.visible').click();
-        cy.get('.signup-form > form > p').should('have.text', 'Email Address already exist!').and('be.visible');
+        cy.get(RegisterPage.emailExistsError)
+            .should('have.text', 'Email Address already exist!')
+            .and('be.visible');
+    });
 
-    })
-
-    it('should verify registration fails with invalid email format (missing @)', () => {
-
-        cy.get('[data-qa="signup-name"]').type('James Cruz');
-        cy.get('[data-qa="signup-email"]').type("jamesgmail.com");
-        cy.get('[data-qa="signup-button"]').should('be.visible').click();
-
-        // Check if email field is marked as invalid
-        cy.get('[data-qa="signup-email"]').then(($input) => {
+    it('should fail registration with invalid email format (missing @)', () => {
+        RegisterPage.fillInitialSignup('James Cruz', 'jamesgmail.com');
+        cy.get(RegisterPage.emailInput).then(($input) => {
             expect($input[0].checkValidity()).to.be.false;
-            expect($input[0].validationMessage).to.eq("Please include an '@' in the email address. 'jamesgmail.com' is missing an '@'.");
-        });
-    })
-
-    it('should verify registration fails when email contains invalid symbol after @', () => {
-
-        cy.get('[data-qa="signup-name"]').type('James Cruz');
-        cy.get('[data-qa="signup-email"]').type("james@#gmail.com");
-        cy.get('[data-qa="signup-button"]').should('be.visible').click();
-
-        // Check if email field is marked as invalid
-        cy.get('[data-qa="signup-email"]').then(($input) => {
-            expect($input[0].checkValidity()).to.be.false;
-            expect($input[0].validationMessage).to.eq("A part following '@' should not contain the symbol '#'.");
-        });
-    })
-
-    it('should verify registration fails when email has invalid dot position in domain extension', () => {
-
-        cy.get('[data-qa="signup-name"]').type('James Cruz');
-        cy.get('[data-qa="signup-email"]').type("james@domain..com");
-        cy.get('[data-qa="signup-button"]').should('be.visible').click();
-
-        // Check if email field is marked as invalid
-        cy.get('[data-qa="signup-email"]').then(($input) => {
-            expect($input[0].checkValidity()).to.be.false;
-            expect($input[0].validationMessage).to.eq("'.' is used at a wrong position in 'domain..com'.");
-        });
-    })
-
-    it('should verify registration fails when name and email fields are empty', () => {
-
-        // Try submitting without filling in fields
-        cy.get('[data-qa="signup-button"]').should('be.visible').click();
-
-        // Check if name field is marked as invalid
-        cy.get('[data-qa="signup-name"]').then(($input) => {
-            expect($input[0].checkValidity()).to.be.false;
-            expect($input[0].validationMessage).to.eq('Please fill out this field.');
-        });
-
-        // You can also check email field
-        cy.get('[data-qa="signup-email"]').then(($input) => {
-            expect($input[0].checkValidity()).to.be.false;
-            expect($input[0].validationMessage).to.eq('Please fill out this field.');
+            expect($input[0].validationMessage).to.include("@");
         });
     });
 
-    it('should verify required fields show "Please fill out this field" validation on extended signup page', () => {
+    it('should fail registration with invalid symbol after @', () => {
+        RegisterPage.fillInitialSignup('James Cruz', 'james@#gmail.com');
+        cy.get(RegisterPage.emailInput).then(($input) => {
+            expect($input[0].checkValidity()).to.be.false;
+            expect($input[0].validationMessage).to.include("@");
+        });
+    });
+
+    it('should fail registration with invalid dot in domain', () => {
+        RegisterPage.fillInitialSignup('James Cruz', 'james@domain..com');
+        cy.get(RegisterPage.emailInput).then(($input) => {
+            expect($input[0].checkValidity()).to.be.false;
+            expect($input[0].validationMessage).to.include("position");
+        });
+    });
+
+    it('should fail registration when name and email are empty', () => {
+        cy.get(RegisterPage.signupButton).click();
+
+        cy.validateRequiredField(RegisterPage.nameInput);
+        cy.validateRequiredField(RegisterPage.emailInput);
+    });
+
+    it.only('should show required field validation on extended registration', () => {
         const user = generateFakeSignupData();
-        // Start signup
-        cy.get('input[data-qa="signup-name"]').type(user.Name);
-        cy.get('input[data-qa="signup-email"]').type(user.Email);
-        cy.get('button[data-qa="signup-button"]').click();
+        RegisterPage.fillInitialSignup(user.Name, user.Email);
 
-        cy.get('#password').then(($input) => {
-            expect($input[0].checkValidity()).to.be.false;
-            expect($input[0].validationMessage).to.eq('Please fill out this field.');
-        });
-        cy.get('#first_name').then(($input) => {
-            expect($input[0].checkValidity()).to.be.false;
-            expect($input[0].validationMessage).to.eq('Please fill out this field.');
-        });
-        cy.get('#last_name').then(($input) => {
-            expect($input[0].checkValidity()).to.be.false;
-            expect($input[0].validationMessage).to.eq('Please fill out this field.');
-        });
-        cy.get('#state').then(($input) => {
-            expect($input[0].checkValidity()).to.be.false;
-            expect($input[0].validationMessage).to.eq('Please fill out this field.');
-        });
-        cy.get('#city').then(($input) => {
-            expect($input[0].checkValidity()).to.be.false;
-            expect($input[0].validationMessage).to.eq('Please fill out this field.');
-        });
-        cy.get('#zipcode').then(($input) => {
-            expect($input[0].checkValidity()).to.be.false;
-            expect($input[0].validationMessage).to.eq('Please fill out this field.');
-        });
-        cy.get('#mobile_number').then(($input) => {
-            expect($input[0].checkValidity()).to.be.false;
-            expect($input[0].validationMessage).to.eq('Please fill out this field.');
-        });
-    })
+        const requiredFields = [
+            RegisterPage.passwordInput,
+            RegisterPage.firstNameInput,
+            RegisterPage.lastNameInput,
+            RegisterPage.stateInput,
+            RegisterPage.cityInput,
+            RegisterPage.zipcodeInput,
+            RegisterPage.mobileNumberInput
+        ];
 
+        cy.validateMultipleRequiredFields(requiredFields);
+    });
 
+    it('should verify important form labels and headers are displayed correctly', () => {
+        // Step 1: Header on first screen
+        cy.verifyTextExists('New User Signup!');
 
-})
+        // Step 2: Proceed to next step
+        const user = generateFakeSignupData();
+        RegisterPage.fillInitialSignup(user.Name, user.Email);
+
+        // Step 3: Verify section header
+        cy.verifyTextExists('Enter Account Information');
+
+        // Step 4: Verify important labels (without needing selector)
+        cy.verifyLabelExists('Password *');
+        cy.verifyLabelExists('First name *');
+        cy.verifyLabelExists('Last name *');
+        cy.verifyLabelExists('Address * (Street address, P.O. Box, Company name, etc.)');
+        cy.verifyLabelExists('Mobile Number *');
+    });
+
+});

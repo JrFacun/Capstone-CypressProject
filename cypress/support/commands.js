@@ -17,6 +17,32 @@ Cypress.Commands.add('login', (email, password) => {
 });
 
 
+//For checking the validation of the input fields
+Cypress.Commands.add('validateRequiredField', (selector) => {
+    cy.get(selector).then(($input) => {
+        expect($input[0].checkValidity()).to.be.false;
+        expect($input[0].validationMessage).to.eq('Please fill out this field.');
+    });
+});
+
+Cypress.Commands.add('validateMultipleRequiredFields', (selectors) => {
+    selectors.forEach((selector) => {
+        cy.validateRequiredField(selector);
+    });
+});
+
+// Check that visible label contains expected text (no need for selector)
+Cypress.Commands.add('verifyLabelExists', (expectedText) => {
+    cy.get('label:visible').should('contain.text', expectedText);
+});
+
+// Or check for ANY visible text (headers, spans, etc.)
+Cypress.Commands.add('verifyTextExists', (expectedText) => {
+    cy.contains(expectedText).should('be.visible');
+});
+
+
+
 //Screnshot 
 const dayjs = require('dayjs');
 //Create a global variable for testCaseTitle ; add "let testCaseTitle;" to initial line of 
@@ -88,3 +114,5 @@ Cypress.Commands.add('addAProductToCart', () => {
   cy.get(':nth-child(3) > .product-image-wrapper > .single-products > .productinfo > .btn').click()
   cy.get('.modal-footer > .btn').click()
 });
+
+
