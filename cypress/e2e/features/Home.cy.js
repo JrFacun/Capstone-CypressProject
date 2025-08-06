@@ -103,5 +103,5 @@ describe("Home Page", () => {
         cy.url().should('eq', 'https://www.automationexercise.com/view_cart');
         cy.get(module.productNameLabel).should('contain', 'Men Tshirt');
     })
-
+    
 })  
