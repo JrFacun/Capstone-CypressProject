@@ -43,7 +43,7 @@ Cypress.Commands.add('verifyTextExists', (expectedText) => {
 
 
 
-//Screnshot 
+//Screenshot 
 const dayjs = require('dayjs');
 //Create a global variable for testCaseTitle ; add "let testCaseTitle;" to initial line of 
 // add the following snippet in the describe block and before the first it block 
