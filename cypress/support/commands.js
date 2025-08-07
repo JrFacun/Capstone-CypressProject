@@ -41,6 +41,16 @@ Cypress.Commands.add('verifyTextExists', (expectedText) => {
     cy.contains(expectedText).should('be.visible');
 });
 
+Cypress.Commands.add('verifyInputsAreEnabled', (selectors) => {
+    selectors.forEach(selector => {
+        cy.get(selector)
+            .should('exist')
+            .should('be.visible')
+            .should('not.be.disabled');
+    });
+});
+
+
 
 
 //Screnshot 
