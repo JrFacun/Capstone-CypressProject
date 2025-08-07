@@ -1,3 +1,5 @@
+///<reference types="cypress" />
+
 import LoginPage from '../../support/POM/loginPage';
 
 describe('Login Tests with POM', () => {
