@@ -1,4 +1,5 @@
 ///<reference types="cypress" />
+import LoginPage from '../../support/POM/loginPage';
 
 describe('Product Search', { testIsolation: false }, () => {
     beforeEach(() => {
@@ -21,95 +22,52 @@ describe('Product Search', { testIsolation: false }, () => {
     });
 });
 
-describe('Filter Products by Category', { testIsolation: false }, () => {
+
+describe('Filter Products', { testIsolation: false }, () => {
+
     beforeEach(() => {
+        cy.clearCookies();
         cy.visit('https://automationexercise.com/products');
         //cy.get('a[href="/products"]').click();
     });
-    it('Verify Category Filtering - Women > Dress Product Listing Accuracy', () => {
+
+    // Category Filtering
+    it('Verify the Accuracy in displaying the Products when filtered by Category', () => {
+
         cy.fixture('products').then((filter) => {
-            cy.filterByCategory(
-                filter.category.women.name,
-                filter.category.women.dress.index,
-                filter.category.women.dress.name)
+            for (let i = 0; i < filter.category.length; i++) {
+                // cy.log(filter.brand[i])
+                cy.filterByCategory(i)
+            }
         });
-        cy.get('.title').should('contain', "Women - Dress Products")
-        cy.title().should('be.equal', 'Automation Exercise - Dress Products');
     })
 
-    it('Verify Category Filtering - Women > Tops Product Listing Accuracy', () => {
+    // Brand Filtering
+    it('Verify the Accuracy in displaying the Products when filtered by Brand', () => {
+        //cy.filterByBrand(0)
         cy.fixture('products').then((filter) => {
-            cy.filterByCategory(
-                filter.category.women.name,
-                filter.category.women.tops.index,
-                filter.category.women.tops.name)
-        });
-        cy.get('.title').should('contain', "Women - Tops Products")
-        cy.title().should('be.equal', 'Automation Exercise - Tops Products');
-    })
-
-    it('Verify Category Filtering - Women > Saree Product Listing Accuracy', () => {
-        cy.fixture('products').then((filter) => {
-            cy.filterByCategory(
-                filter.category.women.name,
-                filter.category.women.saree.index,
-                filter.category.women.saree.name)
-        });
-        cy.get('.title').should('contain', "Women - Saree Products")
-        cy.title().should('be.equal', 'Automation Exercise - Saree Products');
-    })
-
-    it('Verify Category Filtering - Men > Tshirts Product Listing Accuracy', () => {
-        cy.fixture('products').then((filter) => {
-            cy.filterByCategory(
-                filter.category.men.name,
-                filter.category.men.tshirts.index,
-                filter.category.men.tshirts.name)
-        });
-        cy.get('.title').should('contain', "Men - Tshirts Products")
-        cy.title().should('be.equal', 'Automation Exercise - Tshirts Products');
-    })
-
-    it('Verify Category Filtering - Men > Jeans Product Listing Accuracy', () => {
-        cy.fixture('products').then((filter) => {
-            cy.filterByCategory(
-                filter.category.men.name,
-                filter.category.men.jeans.index,
-                filter.category.men.jeans.name)
-        });
-        cy.get('.title').should('contain', "Men - Jeans Products")
-        cy.title().should('be.equal', 'Automation Exercise - Jeans Products');
-    })
-
-    it('Verify Category Filtering - Kids > Dress Product Listing Accuracy', () => {
-        cy.fixture('products').then((filter) => {
-            cy.filterByCategory(
-                filter.category.kids.name,
-                filter.category.kids.dress.index,
-                filter.category.kids.dress.name)
-        });
-        cy.get('.title').should('contain', "Kids - Dress Products")
-        cy.title().should('be.equal', 'Automation Exercise - Dress Products');
-    })
-
-    it('Verify Category Filtering - Kids > Tops & Shirts Product Listing Accuracy', () => {
-        cy.fixture('products').then((filter) => {
-            cy.filterByCategory(
-                filter.category.kids.name,
-                filter.category.kids.tnj.index,
-                filter.category.kids.tnj.name)
-        });
-        cy.get('.title').should('contain', "Kids - Tops & Shirts Products")
-        cy.title().should('be.equal', 'Automation Exercise - Tops & Shirts Products');
+            for (let i = 0; i < filter.brand.length; i++) {
+                cy.filterByBrand(i)
+            }
+        })
     })
 });
 
-describe('Add to Cart Product/s', { testIsolation: false }, () => {
-    // beforeEach(() => {
-    //     ;
-    //     //cy.get('a[href="/products"]').click();
-    // });
-    it.only('Add to Cart 1 product from Products Page', () => {
-        cy.addAProductToCart();
+describe.only('Add to Cart in Products Listing', { testIsolation: false }, () => {
+    beforeEach(() => {
+        cy.clearCookies();
+    });
+
+    it('Verify Adding Product to Cart in Products Page (All Products Listed), filtered listing by Category, and filtered listing by Brand when user is not logged in', () => {
+        cy.addToCartInDifferentPages();
+    });
+
+    it('Verify Adding Product to Cart in Products Page (All Products Listed), filtered listing by Category, and filtered listing by Brand when user is logged in', () => {
+        cy.fixture('user').then((user) => {
+            cy.get('a[href="/login"]').click();
+            LoginPage.login(user[0].Email, user[0].Password);
+            LoginPage.verifyLoginSuccess('James Cruz');
+            cy.addToCartInDifferentPages();
+        });
     });
 })

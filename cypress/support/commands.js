@@ -19,26 +19,26 @@ Cypress.Commands.add('login', (email, password) => {
 
 //For checking the validation of the input fields
 Cypress.Commands.add('validateRequiredField', (selector) => {
-    cy.get(selector).then(($input) => {
-        expect($input[0].checkValidity()).to.be.false;
-        expect($input[0].validationMessage).to.eq('Please fill out this field.');
-    });
+  cy.get(selector).then(($input) => {
+    expect($input[0].checkValidity()).to.be.false;
+    expect($input[0].validationMessage).to.eq('Please fill out this field.');
+  });
 });
 
 Cypress.Commands.add('validateMultipleRequiredFields', (selectors) => {
-    selectors.forEach((selector) => {
-        cy.validateRequiredField(selector);
-    });
+  selectors.forEach((selector) => {
+    cy.validateRequiredField(selector);
+  });
 });
 
 // Check that visible label contains expected text (no need for selector)
 Cypress.Commands.add('verifyLabelExists', (expectedText) => {
-    cy.get('label:visible').should('contain.text', expectedText);
+  cy.get('label:visible').should('contain.text', expectedText);
 });
 
 // Or check for ANY visible text (headers, spans, etc.)
 Cypress.Commands.add('verifyTextExists', (expectedText) => {
-    cy.contains(expectedText).should('be.visible');
+  cy.contains(expectedText).should('be.visible');
 });
 
 
@@ -81,18 +81,76 @@ Cypress.Commands.add('searchProduct', (keyword) => {
   });
 });
 
-// Filter Products
-Cypress.Commands.add('filterByCategory', (cat, subcat, subcatname) => {
-  cy.get(`a[href="#${cat}"]`).click().then(() => {
-    cy.get(`a[href="/category_products/${subcat}"]`).click().then(() => {
+// Filter Products by Category
+Cypress.Commands.add('filterByCategory', (index) => {
+  /*
+    Filter products by category and subcategory
+    and verify that the product is displayed 
+    and matches the value of the name based on the filtered request
+
+  */
+  cy.fixture('products').then((filter) => {
+    const category = filter.category[index].category;
+    const subcategory = filter.category[index].name;
+    const subindex = filter.category[index].index;
+
+    cy.get(`a[href="#${category}"]`).click().then(() => {
+      cy.get(`a[href="/category_products/${subindex}"]`).click().then(() => {
+        /* 
+          Get the products list from the server and filter the products 
+          based on the category and subcategory
+          and verify that the product is displayed and matches the value 
+          of the name based on the filtered request
+        */
+        cy.request({
+          method: 'GET',
+          url: 'https://automationexercise.com/api/productsList',
+          form: true
+        }).then((response) => {
+          const data = JSON.parse(response.body);
+          const filtered = data.products.filter(p => p.category.usertype.usertype === category && p.category.category === subcategory);
+          cy.log(JSON.stringify(filtered));
+
+          cy.get('.title').should('contain', `${category} - ${subcategory} Products`)
+          cy.title().should('be.equal', `Automation Exercise - ${subcategory} Products`);
+
+          // Verify if each product is displayed and matches the value of the name based on the filtered request
+          for (let i = 0; i < filtered.length; i++) {
+            var selector = i + 3;
+            cy.get(`.features_items > div:nth-child(${selector}) > .product-image-wrapper > .single-products > .productinfo > p`).should('contain', filtered[i].name);
+            cy.log(filtered[i].name);
+          }
+        });
+      });
+    });
+  });
+});
+
+// Filter Products by Brand
+Cypress.Commands.add('filterByBrand', (index) => {
+  // Index is to determine the order of the brand and as well as the order in the side menu
+  cy.fixture('products').then((filter) => {
+    const brand = filter.brand[index].name;
+    cy.log(`Testing for Brand: ${brand}`)
+    cy.get(`a[href="/brand_products/${brand}"]`).click().then(() => {
+      // Get the products list from the server and filter the products 
       cy.request({
         method: 'GET',
         url: 'https://automationexercise.com/api/productsList',
         form: true
       }).then((response) => {
         const data = JSON.parse(response.body);
-        const filtered = data.products.filter(p => p.category.usertype.usertype === cat && p.category.category === subcatname);
-        cy.log(JSON.stringify(filtered));
+        // Filter the products based on the brand
+        const filtered = data.products.filter(p => p.brand === brand);
+        //cy.log(JSON.stringify(filtered));
+
+        // Verify if the number of products displayed beside the brand is equal to the number of products in the filtered request
+        cy.get(`.nav > :nth-child(${index + 1}) > a > .pull-right`).should('contain', filtered.length);
+
+        cy.get('.title').should('contain', `Brand - ${brand} Products`)
+
+        cy.title().should('contain', `Automation Exercise - ${brand} Products`)
+
         // Verify if each product is displayed and matches the value of the name based on the filtered request
         for (let i = 0; i < filtered.length; i++) {
           var selector = i + 3;
@@ -104,15 +162,50 @@ Cypress.Commands.add('filterByCategory', (cat, subcat, subcatname) => {
   });
 });
 
-Cypress.Commands.add('addAProductToCart', () => {
-  // Adds the first product displayed in Products Page
-  cy.clearCookies();
-  cy.visit('https://automationexercise.com/products')
-  cy.get('.title').should('contain', "All Products")
-  cy.title().should('be.equal', 'Automation Exercise - All Products')
 
-  cy.get(':nth-child(3) > .product-image-wrapper > .single-products > .productinfo > .btn').click()
-  cy.get('.modal-footer > .btn').click()
+Cypress.Commands.add('addAProductToCart', () => {
+  // Prevent test failure on frontend syntax error (optional, see below)
+  cy.on('uncaught:exception', (err, runnable) => {
+    // returning false prevents Cypress from failing the test
+    return false;
+  });
+
+  // Clear cookies and add the first product
+  cy.clearCookies();
+  cy.get('.add-to-cart').first().click().wait(500);
+  cy.get('.close-modal').click();
 });
+
+Cypress.Commands.add('addToCartInDifferentPages', () => {
+  cy.visit('https://automationexercise.com/products');
+
+  /**
+   * This is to check if add to cart button
+   * is visible and clickable in different pages
+   * such as: All Products Page and Pages filtered by Category or Brand
+   */
+
+  // All Products Page
+  cy.get('.title').should('contain', "All Products")
+  cy.title().should('be.equal', 'Automation Exercise - All Products').then(() => {
+    cy.addAProductToCart();
+  })
+
+  // Filtered Products by Category
+  cy.get(':nth-child(1) > .panel-heading > .panel-title > a').click();
+  cy.get('#Women > .panel-body > ul > :nth-child(1) > a').click();
+  cy.get('.title').should('contain', "Women - Dress Products")
+  cy.title().should('be.equal', 'Automation Exercise - Dress Products').then(() => {
+    cy.addAProductToCart();
+  })
+
+  // Filtered Products by Brand
+  cy.get('a[href="/brand_products/Polo"]').click();
+  cy.get('.title').should('contain', "Brand - Polo Products")
+  cy.title().should('be.equal', 'Automation Exercise - Polo Products').then(() => {
+    cy.addAProductToCart();
+  })
+});
+
 
 
