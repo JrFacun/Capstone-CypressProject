@@ -1,44 +1,65 @@
 {
-    "category": {
-        "women": {
-            "name": "Women",
-            "dress": {
-                "index": 1,
-                "name": "Dress"
-            },
-            "tops": {
-                "index": 2,
-                "name": "Tops"
-            },
-            "saree": {
-                "index": 7,
-                "name": "Saree"
-            }
+    "category": [
+        {
+            "category": "Women",
+            "index": 1,
+            "name": "Dress"
         },
-        "men": {
-            "name": "Men",
-            "tshirts": {
-                "index": 3,
-                "name": "Tshirts"
-            },
-            "jeans": {
-                "index": 6,
-                "name": "Jeans"
-            }
+        {
+            "category": "Women",
+            "index": 2,
+            "name": "Tops"
         },
-        "kids": {
-            "name": "Kids",
-            "dress": {
-                "index": 4,
-                "name": "Dress"
-            },
-            "tnj": {
-                "index": 5,
-                "name": "Tops & Shirts"
-            }
+        {
+            "category": "Women",
+            "index": 7,
+            "name": "Saree"
+        },
+        {
+            "category": "Men",
+            "index": 3,
+            "name": "Tshirts"
+        },
+        {
+            "category": "Men",
+            "index": 6,
+            "name": "Jeans"
+        },
+        {
+            "category": "Kids",
+            "index": 4,
+            "name": "Dress"
+        },
+        {
+            "category": "Kids",
+            "index": 5,
+            "name": "Tops & Shirts"
         }
-    },
-    "brand": {
-
-    }
+    ],
+    "brand": [
+        {
+            "name": "Polo"
+        },
+        {
+            "name": "H&M"
+        },
+        {
+            "name": "Madame"
+        },
+        {
+            "name": "Mast & Harbour"
+        },
+        {
+            "name": "Babyhug"
+        },
+        {
+            "name": "Allen Solly Junior"
+        },
+        {
+            "name": "Kookie Kids"
+        },
+        {
+            "name": "Biba"
+        }
+    ]
 }

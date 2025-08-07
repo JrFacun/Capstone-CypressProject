@@ -69,7 +69,7 @@ describe('Register Test', { testIsolation: false }, () => {
         cy.validateRequiredField(RegisterPage.emailInput);
     });
 
-    it.only('should show required field validation on extended registration', () => {
+    it('should show required field validation on extended registration', () => {
         const user = generateFakeSignupData();
         RegisterPage.fillInitialSignup(user.Name, user.Email);
 
@@ -86,23 +86,143 @@ describe('Register Test', { testIsolation: false }, () => {
         cy.validateMultipleRequiredFields(requiredFields);
     });
 
-    it('should verify important form labels and headers are displayed correctly', () => {
-        // Step 1: Header on first screen
+    it('should verify year dropdown includes the current year', () => {
+        const user = generateFakeSignupData();
+
+        RegisterPage.fillInitialSignup(user.Name, user.Email);
+
+        const currentYear = new Date().getFullYear().toString();
+
+        cy.get('#years > option').then(($options) => {
+            const years = $options.toArray().map(option => option.textContent.trim());
+
+            if (years.includes(currentYear)) {
+                cy.log(`✅ Current year (${currentYear}) is correctly present in the dropdown.`);
+            } else {
+                cy.log(`❌ Current year (${currentYear}) is NOT present in the dropdown.`);
+                throw new Error(`Expected year "${currentYear}" was not found in the #years dropdown.`);
+            }
+        });
+    });
+    it('should only allow registration if password has 6 or more characters', () => {
+        const user = generateFakeSignupData();
+
+        // CASE 1: Test with short password (e.g., 123)
+        const shortPassword = '123';
+
+        const shortPassUser = {
+            ...user,
+            Password: shortPassword,
+        };
+
+        RegisterPage.fillInitialSignup(shortPassUser.Name, shortPassUser.Email);
+
+        // Fill form with short password
+        cy.get(RegisterPage.passwordInput).type(shortPassUser.Password);
+        cy.get(RegisterPage.firstNameInput).type(user.AddressInfo.FirstName);
+        cy.get(RegisterPage.lastNameInput).type(user.AddressInfo.LastName);
+        cy.get(RegisterPage.address1Input).type(user.AddressInfo.Address1);
+        cy.get(RegisterPage.countrySelect).select(user.AddressInfo.Country);
+        cy.get(RegisterPage.stateInput).type(user.AddressInfo.State);
+        cy.get(RegisterPage.cityInput).type(user.AddressInfo.City);
+        cy.get(RegisterPage.zipcodeInput).type(user.AddressInfo.Zipcode);
+        cy.get(RegisterPage.mobileNumberInput).type(user.AddressInfo.MobileNumber);
+
+        // Click create account
+        cy.get(RegisterPage.createAccountButton).click();
+
+        // Assert that it should NOT continue to account created page
+        cy.contains('Account Created!').then(($el) => {
+            if ($el.length) {
+                throw new Error(`❌ Registration accepted with short password "${shortPassword}" — this should be rejected.`);
+            } else {
+                cy.log('✅ Registration was blocked as expected with short password.');
+            }
+        });
+
+        // CASE 2: Retry with a valid password (6+ characters)
+        const validPasswordUser = generateFakeSignupData();
+        RegisterPage.fillInitialSignup(validPasswordUser.Name, validPasswordUser.Email);
+
+        RegisterPage.fillPersonalInfo(validPasswordUser);
+        RegisterPage.fillAddress(validPasswordUser);
+
+        cy.get(RegisterPage.createAccountButton).click();
+
+        // Validate success
+        cy.contains('Account Created!').should('be.visible');
+        cy.get(RegisterPage.continueButton).click();
+        cy.contains('Logged in as').should('contain', validPasswordUser.Name);
+        cy.contains('Logout').click();
+    });
+
+
+    it('should verify complete registration UI: labels, inputs, checkboxes, buttons', () => {
+        // Step 1: Initial page
         cy.verifyTextExists('New User Signup!');
 
-        // Step 2: Proceed to next step
+        // Step 2: Go to registration form
         const user = generateFakeSignupData();
         RegisterPage.fillInitialSignup(user.Name, user.Email);
 
-        // Step 3: Verify section header
+        // Step 3: Header
         cy.verifyTextExists('Enter Account Information');
 
-        // Step 4: Verify important labels (without needing selector)
-        cy.verifyLabelExists('Password *');
-        cy.verifyLabelExists('First name *');
-        cy.verifyLabelExists('Last name *');
-        cy.verifyLabelExists('Address * (Street address, P.O. Box, Company name, etc.)');
-        cy.verifyLabelExists('Mobile Number *');
+        // Step 4: Label assertions
+        const expectedLabels = [
+            'Title',
+            'Password *',
+            'Date of Birth',
+            'First name *',
+            'Last name *',
+            'Company',
+            'Address * (Street address, P.O. Box, Company name, etc.)',
+            'Address 2',
+            'Country *',
+            'State *',
+            'City *',
+            'Zipcode *',
+            'Mobile Number *'
+        ];
+
+        expectedLabels.forEach(label => cy.verifyLabelExists(label));
+
+        // Step 5: Inputs, dropdowns, radios, checkboxes
+        const fieldsToCheck = [
+            RegisterPage.passwordInput,
+            RegisterPage.firstNameInput,
+            RegisterPage.lastNameInput,
+            RegisterPage.companyInput,
+            RegisterPage.address1Input,
+            RegisterPage.address2Input,
+            RegisterPage.countrySelect,
+            RegisterPage.stateInput,
+            RegisterPage.cityInput,
+            RegisterPage.zipcodeInput,
+            RegisterPage.mobileNumberInput,
+            '#days',
+            '#months',
+            '#years'
+        ];
+
+        cy.verifyInputsAreEnabled(fieldsToCheck);
+
+        // Step 6: Title radio buttons
+        cy.get(RegisterPage.genderMaleRadio).should('exist').should('be.visible');
+        cy.get(RegisterPage.genderFemaleRadio).should('exist').should('be.visible');
+
+        // Step 7: Checkboxes
+        cy.get(RegisterPage.newsletterCheckbox).should('exist').should('be.visible').should('not.be.disabled');
+        cy.get(RegisterPage.offersCheckbox).should('exist').should('be.visible').should('not.be.disabled');
+
+        // Step 8: Button
+        cy.get(RegisterPage.createAccountButton)
+            .should('exist')
+            .should('be.visible')
+            .should('not.be.disabled');
+
+        cy.log('✅ All form elements are present and functional');
     });
+
 
 });
