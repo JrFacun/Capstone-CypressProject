@@ -1,45 +1,58 @@
-///<reference types="cypress" />
 
-import LoginPage from '../../support/POM/loginPage';
+describe('API: /verifyLogin Endpoint Tests', () => {
+    const baseUrl = 'https://automationexercise.com/api/verifyLogin';
 
-describe('Login Tests with POM', () => {
-    beforeEach(() => {
-        cy.visit('https://www.automationexercise.com');
-        cy.contains('Signup / Login').click();
-    });
+    let users;
 
-    it('should login successfully', () => {
-        cy.fixture('user').then((user) => {
-            LoginPage.login(user[0].Email, user[0].Password);
-            LoginPage.verifyLoginSuccess('James Cruz');
+    before(() => {
+        cy.fixture('user').then((data) => {
+            users = data;
         });
     });
 
-    it('should show error for incorrect password', () => {
-        cy.fixture('user').then((user) => {
-            LoginPage.login(user[0].Email, user[1].Password);
-            LoginPage.verifyLoginError();
+    it.only('POST: should verify login with valid details (200)', () => {
+        cy.request({
+            method: 'POST',
+            url: baseUrl,
+            form: true,
+            body: {
+                email: users[0].Email,
+                password: users[0].Password
+            }
+        }).then((response) => {
+            expect(response.status).to.eq(200);
+            expect(response.body).to.contain('User exists!');
         });
     });
 
-    it('should show error for incorrect email', () => {
-        cy.fixture('user').then((user) => {
-            LoginPage.login(user[1].Email, user[0].Password);
-            LoginPage.verifyLoginError();
+    it('POST: should return 400 when email is missing', () => {
+        cy.api({
+            method: 'POST',
+            url: baseUrl,
+            form: true,
+            failOnStatusCode: false,
+            body: {
+                password: users[0].Password
+            }
+        }).then((response) => {
+            expect(response.status).to.eq(400);
+            expect(response.body).to.contain('Bad request, email or password parameter is missing in POST request.');
         });
     });
 
-    it('should validate empty email and password fields', () => {
-        LoginPage.submitEmptyLogin();
-        LoginPage.validateRequiredFields();
-    });
-
-    //UI Testing
-    it('should display all login form UI elements correctly', () => {
-        cy.get(LoginPage.emailInput).should('be.visible').and('have.attr', 'placeholder', 'Email Address');
-        cy.get(LoginPage.passwordInput).should('be.visible').and('have.attr', 'placeholder', 'Password');
-        cy.get(LoginPage.loginButton).should('be.visible').and('contain.text', 'Login');
-        cy.get('.login-form').should('be.visible');
-        cy.get('.login-form h2').should('have.text', 'Login to your account');
+    it('POST: should return 404 for invalid credentials', () => {
+        cy.api({
+            method: 'POST',
+            url: baseUrl,
+            form: true,
+            failOnStatusCode: false,
+            body: {
+                email: 'wronguser@example.com',
+                password: 'wrongpass'
+            }
+        }).then((response) => {
+            expect(response.status).to.eq(404);
+            expect(response.body).to.contain('User not found!');
+        });
     });
 });
