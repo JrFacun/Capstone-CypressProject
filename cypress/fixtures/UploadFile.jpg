@@ -1,0 +1,16 @@
+//*[@id="Women"]/div/ul/li[1]/a
+
+#Women > div > ul > li:nth-child(1) > a
+
+#Women > div > ul > li:nth-child(2) > a
+
+string womenListA = "#Women > div > ul > li:nth-child("
+
+string womenListB = ") > a"
+
+var i = 0;
+
+for (i = 0, i<4, i++){
+   cy.get(womenListA+i+womenListB).should('be.visible');
+
+}

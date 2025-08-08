@@ -15,10 +15,36 @@ class ProductCatalogPOM {
   //View Product Page 
   productAddToCartButton = 'body > section > div > div > div.col-sm-9.padding-right > div.product-details > div.col-sm-7 > div > span > button';
 
-  //Cart Product Details 
-  productNameLabel = '#product-2 > td.cart_description > h4 > a';
+    //Cart Product Details 
+    productNameLabel  = '#product-2 > td.cart_description > h4 > a';
+    
 
-  //Search Product
+    //Product Sidebar
+    producturlList = [
+    'Polo',
+    'H&M',
+    'Madame',
+    'Mast%20&%20Harbour',
+    'Babyhug',
+    'Allen%20Solly%20Junior',
+    'Kookie%20Kids',
+    'Biba'
+  ];
+
+  productList = [
+    'Polo',
+    'H&M',
+    'Madame',
+    'Mast & Harbour',
+    'Babyhug',
+    'Allen Solly Junior',
+    'Kookie Kids',
+    'Biba'
+  ];
+    productSideBarSelector = 'body > section > div > div.row > div.col-sm-3 > div.left-sidebar > div.brands_products > div > ul > li:nth-child(';
+    productSideBarLocation =') > a';
+
+    //Search Product
   searchInput = '#search_product';
   searchButton = '#submit_search';
 
