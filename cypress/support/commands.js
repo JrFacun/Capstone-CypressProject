@@ -1,4 +1,4 @@
-
+import 'cypress-file-upload';
 
 //Login User using Fixture 
 Cypress.Commands.add('login', (email, password) => {
@@ -42,12 +42,21 @@ Cypress.Commands.add('verifyTextExists', (expectedText) => {
 });
 
 Cypress.Commands.add('verifyInputsAreEnabled', (selectors) => {
-    selectors.forEach(selector => {
-        cy.get(selector)
-            .should('exist')
-            .should('be.visible')
-            .should('not.be.disabled');
-    });
+  selectors.forEach(selector => {
+    cy.get(selector)
+      .should('exist')
+      .should('be.visible')
+      .should('not.be.disabled');
+  });
+});
+
+//Verify Placeholder text in Text Fields
+Cypress.Commands.add('verifyPlaceholderText', (expectedPlaceholder) => {
+
+    cy.get(`[placeholder="${expectedPlaceholder}"]`)
+      .should('exist')
+      .should('be.visible')
+
 });
 
 
@@ -215,6 +224,14 @@ Cypress.Commands.add('addToCartInDifferentPages', () => {
   cy.title().should('be.equal', 'Automation Exercise - Polo Products').then(() => {
     cy.addAProductToCart();
   })
+});
+
+  //verify that Buttons are enabled
+Cypress.Commands.add('verifyButton', (button) => { 
+  cy.get(button)
+    .should('exist')
+    .and('be.enabled');
+
 });
 
 

@@ -1,0 +1,10 @@
+                    cy.get('.productinfo.text-center').trigger('mouseover');
+                    cy.wait(100);
+
+                    cy.get('.product-overlay').should('be.visible');
+                    cy.get('.product-overlay a').click({ force: true });
+
+cy.get(module.messageLabel)
+                        .should('be.visible')
+                        .and('contain', 'Your product has been added to cart.');
+                    cy.get(module.viewCartLink).click();
