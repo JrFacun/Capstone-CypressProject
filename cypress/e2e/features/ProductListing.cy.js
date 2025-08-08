@@ -1,5 +1,7 @@
 ///<reference types="cypress" />
 import LoginPage from '../../support/POM/loginPage';
+import ProductCatalogPOM from '../../support/POM/general';
+const module = new ProductCatalogPOM;
 
 describe('Product Search', { testIsolation: false }, () => {
     beforeEach(() => {
@@ -12,10 +14,10 @@ describe('Product Search', { testIsolation: false }, () => {
         const keyword = 'Tshirt'; // Item to be searched
 
         // Input the keyword and click the search button
-        cy.get('#search_product').should('be.enabled').clear().type(keyword);
-        cy.get('#submit_search').should('be.visible').click().then(() => {
+        cy.get(module.searchInput).should('be.enabled').clear().type(keyword);
+        cy.get(module.searchButton).should('be.visible').click().then(() => {
             cy.title().should('be.equal', 'Automation Exercise - All Products');
-            cy.get('.title').should('contain', "Searched Products")
+            cy.get(module.title).should('contain', "Searched Products")
             // Create Search Product API request to the server
             cy.searchProduct(keyword);
         })
@@ -53,7 +55,7 @@ describe('Filter Products', { testIsolation: false }, () => {
     })
 });
 
-describe.only('Add to Cart in Products Listing', { testIsolation: false }, () => {
+describe('Add to Cart in Products Listing', { testIsolation: false }, () => {
     beforeEach(() => {
         cy.clearCookies();
     });
