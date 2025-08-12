@@ -3,11 +3,11 @@
 describe('Header Navigation Tests', () => {
 
     beforeEach(() => {
-         cy.clearCookies();
+        cy.clearCookies();
         cy.clearLocalStorage();
         cy.visit('https://www.automationexercise.com');
     });
-     const navLinks = [
+    const navLinks = [
         { label: 'Home', path: '/', uniqueText: 'Full-Fledged practice website for Automation Engineers' },
         { label: 'Products', path: '/products', uniqueText: 'All Products' },
         { label: 'Cart', path: '/view_cart', uniqueText: 'Shopping Cart' },
@@ -42,4 +42,26 @@ describe('Header Navigation Tests', () => {
         cy.get('header').contains('a', 'Products').click();
         cy.get('header').should('be.visible');
     });
+    it('should display correct header for logged-in user', () => {
+        // Login using fixture and custom command
+        cy.fixture('user').then((user) => {
+            cy.login(user[0].Email, user[0].Password);
+        });
+
+        // Visit home page after login if not already there
+        cy.visit('https://www.automationexercise.com');
+
+        // Verify header shows logged-in state
+        cy.get('header').should('contain.text', 'Logged in as');
+        cy.get('header').contains('a', 'Logout').should('be.visible');
+
+        cy.get('header').should('contain.text', 'Logged in as');
+        cy.get('header').contains('a', 'Delete Account').should('be.visible');
+
+        // Verify key navigation links are still visible
+        cy.get('header').contains('a', 'Home').should('be.visible');
+        cy.get('header').contains('a', 'Products').should('be.visible');
+        
+    });
+
 });

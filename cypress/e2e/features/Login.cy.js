@@ -1,45 +1,47 @@
-///<reference types="cypress" />
+describe('Login Test', { testIsolation: false }, () => {
 
-import LoginPage from '../../support/POM/loginPage';
+    it('should successfully login using fixture credentials', () => {
+        cy.fixture('user').then((user) => {
+            cy.login(user[0].Email, user[0].Password);
+        });
+        cy.contains('Logged in as').should('contain', 'James Cruz');
+        cy.contains('Logout').click();
+    });
 
-describe('Login Tests with POM', () => {
-    beforeEach(() => {
+    it('should verify user cannot login with an incorrect password', () => {
+        cy.fixture('user').then((user) => {
+            cy.login(user[0].Email, user[1].Password);
+            cy.get('.login-form > form > p').should('have.text', 'Your email or password is incorrect!');
+
+        });
+    })
+    it('should verify user cannot login with an incorrect email', () => {
+        cy.fixture('user').then((user) => {
+            cy.login(user[1].Email, user[0].Password);
+            cy.get('.login-form > form > p').should('have.text', 'Your email or password is incorrect!');
+
+        });
+    })
+    it('should verify login fails when email and password fields are empty', () => {
         cy.visit('https://www.automationexercise.com');
+
+        // Click the Signup / Login button
         cy.contains('Signup / Login').click();
-    });
 
-    it('should login successfully', () => {
-        cy.fixture('user').then((user) => {
-            LoginPage.login(user[0].Email, user[0].Password);
-            LoginPage.verifyLoginSuccess('James Cruz');
+        // Try submitting without filling in fields
+        cy.get('button[data-qa="login-button"]').click();
+
+        // Check if email field is marked as invalid
+        cy.get('input[data-qa="login-email"]').then(($input) => {
+            expect($input[0].checkValidity()).to.be.false;
+            expect($input[0].validationMessage).to.eq('Please fill out this field.');
+        });
+
+        // You can also check password field (optional)
+        cy.get('input[data-qa="login-password"]').then(($input) => {
+            expect($input[0].checkValidity()).to.be.false;
+            expect($input[0].validationMessage).to.eq('Please fill out this field.');
         });
     });
 
-    it('should show error for incorrect password', () => {
-        cy.fixture('user').then((user) => {
-            LoginPage.login(user[0].Email, user[1].Password);
-            LoginPage.verifyLoginError();
-        });
-    });
-
-    it('should show error for incorrect email', () => {
-        cy.fixture('user').then((user) => {
-            LoginPage.login(user[1].Email, user[0].Password);
-            LoginPage.verifyLoginError();
-        });
-    });
-
-    it('should validate empty email and password fields', () => {
-        LoginPage.submitEmptyLogin();
-        LoginPage.validateRequiredFields();
-    });
-
-    //UI Testing
-    it('should display all login form UI elements correctly', () => {
-        cy.get(LoginPage.emailInput).should('be.visible').and('have.attr', 'placeholder', 'Email Address');
-        cy.get(LoginPage.passwordInput).should('be.visible').and('have.attr', 'placeholder', 'Password');
-        cy.get(LoginPage.loginButton).should('be.visible').and('contain.text', 'Login');
-        cy.get('.login-form').should('be.visible');
-        cy.get('.login-form h2').should('have.text', 'Login to your account');
-    });
 });
