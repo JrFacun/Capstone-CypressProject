@@ -53,12 +53,129 @@ Cypress.Commands.add('verifyInputsAreEnabled', (selectors) => {
 //Verify Placeholder text in Text Fields
 Cypress.Commands.add('verifyPlaceholderText', (expectedPlaceholder) => {
 
-    cy.get(`[placeholder="${expectedPlaceholder}"]`)
-      .should('exist')
-      .should('be.visible')
+  cy.get(`[placeholder="${expectedPlaceholder}"]`)
+    .should('exist')
+    .should('be.visible')
 
 });
 
+//Verify Table Columns 
+Cypress.Commands.add('verifyTableColumn', (columnTitle) => {
+  cy.get(columnTitle)
+    .should('exist')
+    .should('be.visible');
+});
+
+//Verify Item in the Cart 
+Cypress.Commands.add('verifyCartItems', () => {
+
+  const checks = [
+    {
+      name: 'Product Images',
+      selector: 'img[src*="get_product_picture"]',
+      min: 1,
+      max: 36,
+      assert: ($el, index) => {
+        expect($el[0].naturalWidth).to.be.greaterThan(0);
+        cy.log(`✅ Image loaded for product ${index + 1}`);
+      }
+    },
+    {
+      name: 'Product Links',
+      selector: '.cart_description > h4 > a',
+      min: 1,
+      max: 36,
+      assert: ($el, index) => {
+        cy.wrap($el).should('have.attr', 'href');
+        cy.log(`🔗 Product ${index + 1} link: ${$el.attr('href')}`);
+      }
+    },
+    {
+      name: 'Product Descriptions',
+      selector: '.cart_description > p',
+      min: 1,
+      max: 36,
+      assert: ($el, index) => {
+        const text = $el.text().trim();
+        expect(text).to.not.be.empty;
+        cy.log(`📝 Product ${index + 1} description: ${text}`);
+      }
+    },
+    {
+      name: 'Prices',
+      selector: '.cart_price > p',
+      min: 1,
+      max: 36,
+      assert: ($el, index) => {
+        const text = $el.text().trim();
+        expect(text).to.match(/^Rs\.\s?\d{1,6}$/);
+        cy.log(`💰 Product ${index + 1} price: ${text}`);
+      }
+    },
+    {
+      name: 'Quantities',
+      selector: '.cart_quantity > .disabled',
+      min: 1,
+      max: 36,
+      assert: ($el, index) => {
+        const qty = $el.text().trim();
+        expect(qty).to.match(/^\d+$/);
+        cy.log(`📦 Product ${index + 1} quantity: ${qty}`);
+      }
+    },
+    {
+      name: 'Total Prices',
+      selector: '.cart_total_price',
+      min: 1,
+      max: 36,
+      assert: ($el, index) => {
+        const total = $el.text().trim();
+        expect(total).to.match(/^Rs\.\s*\d+$/);
+        cy.log(`🧾 Product ${index + 1} total: ${total}`);
+      }
+    }
+  ];
+
+  cy.get('body').then(($body) => {
+    if ($body.find('h2:contains("Review Your Order")').length > 0) {
+      // ✅ Skip delete button, check total amount
+      cy.get('h4 > b').should('have.text', 'Total Amount');
+      cy.get(':nth-child(4) > .cart_total_price')
+        .invoke('text')
+        .then((totalText) => {
+          const cleanTotal = totalText.trim();
+          expect(cleanTotal).to.match(/^Rs\.\s*\d+$/);
+        });
+    } else {
+      // ✅ Normal delete button check
+      cy.get('.cart_delete > .cart_quantity_delete > .fa', { timeout: 10000 })
+        .should('have.length.at.least', 1)
+        .and('have.length.at.most', 36)
+        .each(($icon, index) => {
+          cy.wrap($icon)
+            .should('be.visible')
+            .and(($el) => {
+              expect($el.prop('tagName')).to.eq('I');
+              expect($el.hasClass('fa')).to.be.true;
+            });
+          cy.log(`Product ${index + 1} delete icon detected`);
+        });
+    }
+
+    // Run the common checks (images, links, prices, etc.)
+    checks.forEach(({ name, selector, min, max, assert }) => {
+      cy.get(selector, { timeout: 10000 })
+        .should('have.length.at.least', min)
+        .and('have.length.at.most', max)
+        .each(($el, index) => {
+          cy.wrap($el).should('be.visible');
+          assert($el, index);
+        });
+    });
+
+  });
+
+});
 
 
 
@@ -226,12 +343,47 @@ Cypress.Commands.add('addToCartInDifferentPages', () => {
   })
 });
 
-  //verify that Buttons are enabled
-Cypress.Commands.add('verifyButton', (button) => { 
+//verify that Buttons are enabled
+Cypress.Commands.add('verifyButton', (button) => {
   cy.get(button)
     .should('exist')
     .and('be.enabled');
 
+});
+
+//clear cart 
+// Command to delete all items from cart
+Cypress.Commands.add('clearCart', () => {
+  cy.get('body').then(($body) => {
+    if ($body.find('.cart_delete > .cart_quantity_delete > .fa').length > 0) {
+      cy.get('.cart_delete > .cart_quantity_delete > .fa')
+        .each(($btn) => {
+          cy.wrap($btn).click({ force: true });
+        })
+        .then(() => {
+          // Recursively call until cart is empty
+          cy.clearCart();
+        });
+    } else {
+      cy.log('🛒 Cart is now empty');
+    }
+  });
+});
+
+Cypress.Commands.add('verifyInvoice', (trimmedName,amount) => {
+  const fileName = 'invoice.txt';
+  cy.task('deleteFile', fileName);
+  cy.readFile(`cypress/downloads/${fileName}`, { timeout: 15000 }) // wait up to 15s for file
+    .should('exist')
+    .then((fileContent) => {
+      // Optional: verify content
+      expect(fileContent.length).to.be.greaterThan(0); // Not empty
+      const message = `Hi `+trimmedName+`, Your total purchase amount is `+amount+`. Thank you`;
+      cy.log('Invoice Message:', message);
+      expect(fileContent.trim()).to.eq(message);
+
+
+    });
 });
 
 

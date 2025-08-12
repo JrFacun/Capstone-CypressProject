@@ -1,6 +1,6 @@
 import LoginPage from '../../support/POM/loginPage';
 import ProductCatalogPOM from '../../support/POM/general';
-const module = new ProductCatalogPOM;
+const module = ProductCatalogPOM;
 let testCaseTitle;
 describe("Home Page", () => {
     beforeEach(function () {
@@ -67,20 +67,8 @@ describe("Home Page", () => {
 
         })
     })
-    it("User is able add a product to the cart from the Home Page product overlay", () => {
-        cy.get('.features_items > div').eq(2).within(() => {
-            // Hover over the product
-
-            cy.get('.productinfo.text-center').trigger('mouseover');
-            cy.wait(100);
-
-            cy.get('.product-overlay a').click({ force: true });
-             });
-            cy.get(module.messageLabel, { timeout: 10000 }).should('exist')
-                .and('contain', 'Your product has been added to cart.');
-            cy.get(module.viewCartLink).click({ force: true });
-       
-
+    it.only("User is able add a product to the cart from the Home Page product overlay", () => {
+        ProductCatalogPOM.addProduct();
     })
     it("User is able add a product to the cart from the View Product Page", () => {
         let productItem = 4;
@@ -95,33 +83,9 @@ describe("Home Page", () => {
         cy.get(module.productNameLabel).should('contain', 'Men Tshirt');
     })
     it("User is able add all products to the cart from the Home Page product overlay", () => {
-        cy.get('.features_items > div').each(($el, index, $list) => {
-            if (index >= 1) { // Starts at productItem = 3
-                cy.wrap($el).within(() => {
-                    cy.get('.productinfo.text-center').trigger('mouseover');
-                    cy.wait(100);
-
-                    cy.get('.product-overlay').should('be.visible');
-                    cy.get('.product-overlay a').click({ force: true });
-                });
-
-                cy.wait(200);
-
-                if (index + 1 !== $list.length) {
-                    // Not the last item
-                    cy.get(module.continueShoppingButton).should('be.visible').click();
-                } else {
-                    // Last product - #cartModal > div > div > div.modal-body > p:nth-child(1)
-                    cy.get(module.messageLabel)
-                        .should('be.visible')
-                        .and('contain', 'Your product has been added to cart.');
-                    cy.get(module.viewCartLink).click();
-                }
-            }
-        });
-
+       
         cy.wait(200);
-
+        module.addAllProducts();
         cy.url().should('eq', 'https://www.automationexercise.com/view_cart');
         cy.get(module.productNameLabel).should('contain', 'Men Tshirt');
     })
