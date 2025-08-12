@@ -9,6 +9,7 @@ let user;
 describe("Contact Us Test Cases", () => {
     beforeEach(function () {
         testCaseTitle = this.currentTest.title;
+        //change
     });
     beforeEach(() => {
         cy.visit('https://www.automationexercise.com');
@@ -252,4 +253,3 @@ describe("Contact Us Test Cases", () => {
     });
 });
 
-    
