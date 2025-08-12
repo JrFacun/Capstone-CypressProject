@@ -1,5 +1,5 @@
 class ProductCatalogPOM {
-class ProductCatalogPOM {
+
 
   //ProductGrid
   productInfo = ') > div > div.single-products > div.productinfo.text-center';
