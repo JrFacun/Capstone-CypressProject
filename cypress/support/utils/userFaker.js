@@ -1,4 +1,4 @@
-import { faker } from '@faker-js/faker';
+import { fa, faker } from '@faker-js/faker';
 
 export function generateFakeSignupData() {
     const titles = ['Mr.', 'Mrs.'];
@@ -31,6 +31,11 @@ export function generateFakeSignupData() {
             City: faker.location.city(),
             Zipcode: faker.location.zipCode(),
             MobileNumber: faker.phone.number('+63##########')
-        }
+        },
+        CardNumber : faker.finance.creditCardNumber(),
+        CVC : faker.finance.creditCardCVV(),
+        ExpiryMonth : faker.date.future().getMonth() + 1,
+        ExpiryYear : faker.date.future().getFullYear()
+
     };
 }

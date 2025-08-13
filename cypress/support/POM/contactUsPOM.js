@@ -13,11 +13,23 @@ class contactUs{
       pngFileName = 'UploadFile.png';
       txtFileName = 'UploadFile.txt';
       jpgFileName = 'UploadFile.jpg';
-fillUpForm(email, password,subject,message) {
-        cy.get(this.nameText).type(email);
-        cy.get(this.emailText).type(password);
-        cy.get(this.subjectText).type(subject);
-        cy.get(this.messageText).type(message);
+      pptxFileName = 'UploadFile.pptx';
+fillUpForm(name,email,subject,message) {
+  if (name) {
+    cy.get(this.nameText).type(name);
+  }
+
+  if (email) {
+    cy.get(this.emailText).type(email);
+  }
+
+  if (subject) {
+    cy.get(this.subjectText).type(subject);
+  }
+
+  if (message) {
+    cy.get(this.messageText).type(message);
+  }
        cy.get(this.submitButton).click();
     };
 };

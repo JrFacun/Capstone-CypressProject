@@ -1,4 +1,6 @@
 const { defineConfig } = require("cypress");
+const fs = require('fs');
+const path = require('path');
 const express = require("express");
 
 let server;
@@ -24,6 +26,14 @@ module.exports = defineConfig({
         },
         stopMockServer() {
           if (server) server.close();
+          return null;
+        }
+        deleteFile(fileName) {
+          const filePath = path.join(__dirname, '..', 'downloads', fileName);
+          if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+            console.log(`Deleted: ${filePath}`);
+          }
           return null;
         }
       });

@@ -1,58 +1,47 @@
+describe('Login Test', { testIsolation: false }, () => {
 
-describe('API: /verifyLogin Endpoint Tests', () => {
-    const baseUrl = 'https://automationexercise.com/api/verifyLogin';
+    it('should successfully login using fixture credentials', () => {
+        cy.fixture('user').then((user) => {
+            cy.login(user[0].Email, user[0].Password);
+        });
+        cy.contains('Logged in as').should('contain', 'James Cruz');
+        cy.contains('Logout').click();
+    });
 
-    let users;
+    it('should verify user cannot login with an incorrect password', () => {
+        cy.fixture('user').then((user) => {
+            cy.login(user[0].Email, user[1].Password);
+            cy.get('.login-form > form > p').should('have.text', 'Your email or password is incorrect!');
 
-    before(() => {
-        cy.fixture('user').then((data) => {
-            users = data;
+        });
+    })
+    it('should verify user cannot login with an incorrect email', () => {
+        cy.fixture('user').then((user) => {
+            cy.login(user[1].Email, user[0].Password);
+            cy.get('.login-form > form > p').should('have.text', 'Your email or password is incorrect!');
+
+        });
+    })
+    it('should verify login fails when email and password fields are empty', () => {
+        cy.visit('https://www.automationexercise.com');
+
+        // Click the Signup / Login button
+        cy.contains('Signup / Login').click();
+
+        // Try submitting without filling in fields
+        cy.get('button[data-qa="login-button"]').click();
+
+        // Check if email field is marked as invalid
+        cy.get('input[data-qa="login-email"]').then(($input) => {
+            expect($input[0].checkValidity()).to.be.false;
+            expect($input[0].validationMessage).to.eq('Please fill out this field.');
+        });
+
+        // You can also check password field (optional)
+        cy.get('input[data-qa="login-password"]').then(($input) => {
+            expect($input[0].checkValidity()).to.be.false;
+            expect($input[0].validationMessage).to.eq('Please fill out this field.');
         });
     });
 
-    it.only('POST: should verify login with valid details (200)', () => {
-        cy.request({
-            method: 'POST',
-            url: baseUrl,
-            form: true,
-            body: {
-                email: users[0].Email,
-                password: users[0].Password
-            }
-        }).then((response) => {
-            expect(response.status).to.eq(200);
-            expect(response.body).to.contain('User exists!');
-        });
-    });
-
-    it('POST: should return 400 when email is missing', () => {
-        cy.api({
-            method: 'POST',
-            url: baseUrl,
-            form: true,
-            failOnStatusCode: false,
-            body: {
-                password: users[0].Password
-            }
-        }).then((response) => {
-            expect(response.status).to.eq(400);
-            expect(response.body).to.contain('Bad request, email or password parameter is missing in POST request.');
-        });
-    });
-
-    it('POST: should return 404 for invalid credentials', () => {
-        cy.api({
-            method: 'POST',
-            url: baseUrl,
-            form: true,
-            failOnStatusCode: false,
-            body: {
-                email: 'wronguser@example.com',
-                password: 'wrongpass'
-            }
-        }).then((response) => {
-            expect(response.status).to.eq(404);
-            expect(response.body).to.contain('User not found!');
-        });
-    });
 });
