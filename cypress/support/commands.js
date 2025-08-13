@@ -53,9 +53,9 @@ Cypress.Commands.add('verifyInputsAreEnabled', (selectors) => {
 //Verify Placeholder text in Text Fields
 Cypress.Commands.add('verifyPlaceholderText', (expectedPlaceholder) => {
 
-    cy.get(`[placeholder="${expectedPlaceholder}"]`)
-      .should('exist')
-      .should('be.visible')
+  cy.get(`[placeholder="${expectedPlaceholder}"]`)
+    .should('exist')
+    .should('be.visible')
 
 });
 
@@ -132,6 +132,7 @@ Cypress.Commands.add('filterByCategory', (index) => {
 
           cy.get('.title').should('contain', `${category} - ${subcategory} Products`)
           cy.title().should('be.equal', `Automation Exercise - ${subcategory} Products`);
+          cy.snapshot('Filter Products by Category');
 
           // Verify if each product is displayed and matches the value of the name based on the filtered request
           for (let i = 0; i < filtered.length; i++) {
@@ -169,7 +170,7 @@ Cypress.Commands.add('filterByBrand', (index) => {
         cy.get('.title').should('contain', `Brand - ${brand} Products`)
 
         cy.title().should('contain', `Automation Exercise - ${brand} Products`)
-
+        cy.snapshot('Filter Products by Brand');
         // Verify if each product is displayed and matches the value of the name based on the filtered request
         for (let i = 0; i < filtered.length; i++) {
           var selector = i + 3;
@@ -182,7 +183,7 @@ Cypress.Commands.add('filterByBrand', (index) => {
 });
 
 
-Cypress.Commands.add('addAProductToCart', () => {
+Cypress.Commands.add('addAProductToCart', (ssfilename) => {
   // Prevent test failure on frontend syntax error (optional, see below)
   cy.on('uncaught:exception', (err, runnable) => {
     // returning false prevents Cypress from failing the test
@@ -192,10 +193,11 @@ Cypress.Commands.add('addAProductToCart', () => {
   // Clear cookies and add the first product
   cy.clearCookies();
   cy.get('.add-to-cart').first().click().wait(500);
+  cy.snapshot(ssfilename);
   cy.get('.close-modal').click();
 });
 
-Cypress.Commands.add('addToCartInDifferentPages', () => {
+Cypress.Commands.add('addToCartInDifferentPages', (ssfilename) => {
   cy.visit('https://automationexercise.com/products');
 
   /**
@@ -207,7 +209,7 @@ Cypress.Commands.add('addToCartInDifferentPages', () => {
   // All Products Page
   cy.get('.title').should('contain', "All Products")
   cy.title().should('be.equal', 'Automation Exercise - All Products').then(() => {
-    cy.addAProductToCart();
+    cy.addAProductToCart(ssfilename);
   })
 
   // Filtered Products by Category
@@ -215,19 +217,19 @@ Cypress.Commands.add('addToCartInDifferentPages', () => {
   cy.get('#Women > .panel-body > ul > :nth-child(1) > a').click();
   cy.get('.title').should('contain', "Women - Dress Products")
   cy.title().should('be.equal', 'Automation Exercise - Dress Products').then(() => {
-    cy.addAProductToCart();
+    cy.addAProductToCart(ssfilename);
   })
 
   // Filtered Products by Brand
   cy.get('a[href="/brand_products/Polo"]').click();
   cy.get('.title').should('contain', "Brand - Polo Products")
   cy.title().should('be.equal', 'Automation Exercise - Polo Products').then(() => {
-    cy.addAProductToCart();
+    cy.addAProductToCart(ssfilename);
   })
 });
 
-  //verify that Buttons are enabled
-Cypress.Commands.add('verifyButton', (button) => { 
+//verify that Buttons are enabled
+Cypress.Commands.add('verifyButton', (button) => {
   cy.get(button)
     .should('exist')
     .and('be.enabled');

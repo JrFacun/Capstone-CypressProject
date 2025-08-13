@@ -49,9 +49,9 @@ class ProductDetailViewPOM {
         if (body && body.length > 0) {
             cy.get(this.txtBodyReview).type(body);
         }
-
+        
         // Submit
-        cy.get(this.btnSubmitReview).click().wait(5000);
+        cy.get(this.btnSubmitReview).click();
         //this.getAlertSuccess();
     }
 
@@ -64,7 +64,7 @@ class ProductDetailViewPOM {
     }
 
     static clickAddToCart(){
-        cy.get(this.btnAddToCart).click();
+        cy.get(this.btnAddToCart).click().wait(5000);
     }
 }
 
