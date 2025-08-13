@@ -27,7 +27,7 @@ module.exports = defineConfig({
         stopMockServer() {
           if (server) server.close();
           return null;
-        }
+        },
         deleteFile(fileName) {
           const filePath = path.join(__dirname, '..', 'downloads', fileName);
           if (fs.existsSync(filePath)) {
