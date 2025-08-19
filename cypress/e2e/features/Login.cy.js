@@ -1,11 +1,17 @@
 describe('Login Test', { testIsolation: false }, () => {
 
+     beforeEach(() => {
+        cy.clearCookies();
+        cy.clearLocalStorage();
+        cy.visit('https://www.automationexercise.com');
+        cy.contains('Signup / Login').click();
+    });
+
     it('should successfully login using fixture credentials', () => {
         cy.fixture('user').then((user) => {
             cy.login(user[0].Email, user[0].Password);
         });
         cy.contains('Logged in as').should('contain', 'James Cruz');
-        cy.contains('Logout').click();
     });
 
     it('should verify user cannot login with an incorrect password', () => {
@@ -23,10 +29,6 @@ describe('Login Test', { testIsolation: false }, () => {
         });
     })
     it('should verify login fails when email and password fields are empty', () => {
-        cy.visit('https://www.automationexercise.com');
-
-        // Click the Signup / Login button
-        cy.contains('Signup / Login').click();
 
         // Try submitting without filling in fields
         cy.get('button[data-qa="login-button"]').click();
