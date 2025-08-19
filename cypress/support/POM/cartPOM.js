@@ -33,6 +33,11 @@ class cartPage{
     deliverAddressNameLabel = '#address_delivery > .address_firstname';
     totalAmount = ':nth-child(4) > .cart_total_price';
 
+    //Modal - Checkout
+    modalTitleLabel = '.modal-title';
+    modalDescriptionLabel = '.modal-body > :nth-child(1)';
+    modalRegisterLogin = '.modal-body > :nth-child(2) > a > u';
+    modalContinueButton = '.modal-footer > .btn';
 
     enterPaymentDetails(name,cardNumber,CVC,expiryMonth, expiryYear){
          if (name) {
