@@ -1,5 +1,4 @@
 class ProductCatalogPOM {
-class ProductCatalogPOM {
 
   //ProductGrid
   productInfo = ') > div > div.single-products > div.productinfo.text-center';
@@ -104,4 +103,4 @@ class ProductCatalogPOM {
   };
 
 }
-export default new ProductCatalogPOM();
+export default ProductCatalogPOM;

@@ -55,6 +55,10 @@ class ProductDetailViewPOM {
         //this.getAlertSuccess();
     }
 
+    static verifySuccessModalHidden(){
+        cy.get(this.mdlSuccess).should('not.be.visible');    
+    }
+
     static getAlertSuccess() {
         cy.get(this.alertSuccess).should('be.visible');
     }
@@ -64,7 +68,7 @@ class ProductDetailViewPOM {
     }
 
     static clickAddToCart(){
-        cy.get(this.btnAddToCart).click().wait(5000);
+        cy.get(this.btnAddToCart).click().wait(400);
     }
 }
 

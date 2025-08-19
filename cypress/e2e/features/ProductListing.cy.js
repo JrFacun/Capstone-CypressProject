@@ -9,13 +9,13 @@ describe('Product Search', { testIsolation: false }, () => {
         //cy.get('a[href="/products"]').click();
     });
 
-    it("Verify Search Bar Functionality - Display of Relevant Items (with API)", () => {
+    it.only("Verify Search Bar Functionality - Display of Relevant Items (with API)", () => {
         cy.snapshot('Search a Product then Verify Search Results')
         const keyword = 'Tshirt'; // Item to be searched
 
         // Input the keyword and click the search button
         cy.get(module.searchInput).should('be.enabled').clear().type(keyword);
-        cy.get(module.searchButton).should('be.visible').click().then(() => {            
+        cy.get(module.searchButton).should('be.visible').click().then(() => {
             cy.title().should('be.equal', 'Automation Exercise - All Products');
             cy.get(module.title).should('contain', "Searched Products")
             // Create Search Product API request to the server
@@ -78,4 +78,18 @@ describe('Add to Cart in Products Listing', { testIsolation: false }, () => {
             cy.addToCartInDifferentPages(filename);
         });
     });
+})
+
+describe('Scroll Up Button', { testIsolation: false }, () => {
+    it('Verify Scroll Up Button', () => {
+        cy.visit('https://automationexercise.com/products');
+        cy.get('#scrollUp').should('not.be.visible').then(() => {
+            cy.scrollTo('bottom'); // in ms
+            cy.get('#scrollUp').should('be.visible').click();
+            cy.window().its('scrollY').should('equal', 0);
+            cy.get('#scrollUp').should('not.be.visible')            
+        })
+
+
+    })
 })
