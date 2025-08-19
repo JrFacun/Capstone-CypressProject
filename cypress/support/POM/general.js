@@ -67,11 +67,10 @@ class ProductCatalogPOM {
   addProduct() {
     cy.get('.features_items > div').eq(2).within(() => {
       // Hover over the product
-      cy.get('.productinfo.text-center').trigger('mouseover');
-      cy.wait(100);
+      cy.get('.productinfo.text-center', { timeout: 10000 }).trigger('mouseover');
       cy.get('.product-overlay a').click({ force: true });
     });
-    cy.get(this.messageLabel, { timeout: 10000 }).should('exist')
+    cy.get(this.messageLabel).should('exist')
       .and('contain', 'Your product has been added to cart.');
     cy.get(this.viewCartLink).click({ force: true });
   };
@@ -81,20 +80,21 @@ class ProductCatalogPOM {
             if (index >= 1) { // Starts at productItem = 3
                 cy.wrap($el).within(() => {
                     cy.get('.productinfo.text-center').trigger('mouseover');
-                    cy.wait(100);
 
-                    cy.get('.product-overlay').should('be.visible');
+                    cy.get('.product-overlay', { timeout: 10000, waitUntil: 'domcontentloaded'}).should('be.visible');
                     cy.get('.product-overlay a').click({ force: true });
                 });
 
                 cy.wait(200);
 
                 if (index + 1 !== $list.length) {
-                    // Not the last item
-                    cy.get(this.continueShoppingButton).should('be.visible').click();
+                  // Not the last item
+                  cy.get(this.continueShoppingButton, { timeout: 10000 })
+                    .should('be.visible')
+                    .click();
                 } else {
                     // Last product - #cartModal > div > div > div.modal-body > p:nth-child(1)
-                    cy.get(this.messageLabel)
+                    cy.get(this.messageLabel, { timeout: 10000 })
                         .should('be.visible')
                         .and('contain', 'Your product has been added to cart.');
                     cy.get(this.viewCartLink).click();

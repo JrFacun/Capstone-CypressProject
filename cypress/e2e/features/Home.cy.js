@@ -67,7 +67,7 @@ describe("Home Page", () => {
 
         })
     })
-    it.only("User is able add a product to the cart from the Home Page product overlay", () => {
+    it("User is able add a product to the cart from the Home Page product overlay", () => {
         ProductCatalogPOM.addProduct();
     })
     it("User is able add a product to the cart from the View Product Page", () => {
