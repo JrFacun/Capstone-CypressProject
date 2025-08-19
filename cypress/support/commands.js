@@ -207,6 +207,7 @@ Cypress.Commands.add('searchProduct', (keyword) => {
   }).then((response) => {
     const parse = JSON.parse(response.body);
     const products = parse.products;
+    cy.log(`API RESPONSE: ${JSON.stringify(parse)}`)
 
     // Verify if each product is displayed and matches the value of the name based on the search request
     for (let i = 0; i < products.length; i++) {

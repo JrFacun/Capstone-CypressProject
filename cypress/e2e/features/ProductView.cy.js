@@ -159,40 +159,35 @@ describe('Add to Cart Functionality', { testIsolation: false }, () => {
         cy.get(ProductDetailViewPOM.mdlSuccess).should('be.visible');
     })
 
-    it('Verify that Add to Cart Function will not accept a negative integer or a float', () => {
-        const ssfilename = 'ProductView - Input Quantity with a negative integer and a float then Verify an unsuccessful Add To Cart function';
-        const negativeQuantity = -1
+    it('Verify that Add to Cart Function will not accept a number with a decimal value for Quantity', () => {
+        const ssfilename = 'ProductView - Verify an unsuccessful Add To Cart function with a decimal value for Quantity';
         const floatQuantity = 1.5;
+        addToCart(floatQuantity, ssfilename);
+    })
 
+    it('Verify that Add to Cart Function will not accept a negative integer for Quantity', () => {
+        const ssfilename = 'ProductView - Verify an unsuccessful Add To Cart function with a negative value for Quantity';
+        const negativeQuantity = -1
+        addToCart(negativeQuantity, ssfilename);
+    })
+
+    it('Verify that Add to Cart Function will not accept a zero (0) for Quantity', () => {
+        const ssfilename = 'ProductView - Verify an unsuccessful Add To Cart function with a zero (0) for Quantity';
+        const zeroQuantity = 0
+        addToCart(zeroQuantity, ssfilename);
+    })
+
+    function addToCart(quantity, ssfilename) {
         cy.visit('https://automationexercise.com/products');
         cy.get('div.choose > ul > li > a').first().click();
-        // Float value for quantity
-        ProductDetailViewPOM.inputQuantity(floatQuantity);
+
+        ProductDetailViewPOM.inputQuantity(quantity);
         cy.snapshot(ssfilename);
-
-        // Intercept the exact request
-        cy.intercept('POST', `**/add_to_cart/2?quantity=${floatQuantity}`).as('addToCart');
-
-        // Click the button that triggers it
+        if (!Number.isInteger(quantity)) {
+            cy.intercept('POST', `**/add_to_cart/2?quantity=${quantity}`).as('addToCart');
+        }
         ProductDetailViewPOM.clickAddToCart();
         cy.snapshot(ssfilename);
-        cy.get(ProductDetailViewPOM.mdlSuccess).should('not.be.visible');
-
-
-        // Wait for the request and check the response
-        // cy.wait('@addToCart').then((interception) => {
-        //     expect(interception.response.statusCode).to.eq(500);
-        //     cy.log('500 error was caught successfully');
-        //     cy.get(ProductDetailViewPOM.mdlSuccess).should('not.be.visible');
-        // });
-
-        // Negative value for quantity
-        ProductDetailViewPOM.inputQuantity(negativeQuantity);
-        cy.snapshot(ssfilename);
-        ProductDetailViewPOM.clickAddToCart();
-        cy.snapshot(ssfilename);
-        cy.get(ProductDetailViewPOM.mdlSuccess).should('not.be.visible');
-
-
-    })
+        ProductDetailViewPOM.verifySuccessModalHidden();
+    }
 });
