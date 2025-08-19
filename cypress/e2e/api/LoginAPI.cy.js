@@ -56,7 +56,6 @@ describe('API: Login Endpoint API Tests', () => {
         });
     });
 
-    // 🔹 New: API 9 test with a local mock server returning 405
     context('API 9 : DELETE should return 405', () => {
         before(() => {
             cy.task('startMockServer');
