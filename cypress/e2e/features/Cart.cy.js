@@ -34,7 +34,7 @@ describe("Contact Us Test Cases", () => {
 
     });
 
-    it("Add to Cart UI Check", () => {
+    it("Add to Cart UI Check - TC_CART_UICHECK, TC_CART_001", () => {
         cy.visit('https://www.automationexercise.com/cart');
         productCatalog.addProduct();
         const tableColumns = [
@@ -90,12 +90,12 @@ describe("Contact Us Test Cases", () => {
         module.clickContinue();
     });
 
-    it("User is not able to checkout if there are no items in the cart", () => {
+    it("User is not able to checkout if there are no items in the cart- TC_CART_002", () => {
         module.checkOutEmptyCart();
 
     })
 
-    it('User is able to checkout all products', () => {
+    it('User is able to checkout all products - TC_CART_003', () => {
         productCatalog.addAllProducts();
         cy.get(module.proceedToCheckoutButton).should('exist').and('be.visible').click();
         cy.get(module.placeOrderButton).should('be.visible').and('exist').click();
@@ -105,13 +105,13 @@ describe("Contact Us Test Cases", () => {
         module.clickContinue();
     });
 
-    it('User is able to remove all products', () => {
+    it('User is able to remove all products - TC_CART_004', () => {
         productCatalog.addProduct();
         cy.clearCart();
         module.verifyEmptyCart();
     });
 
-    it('User is able to comment before checkout', () => {
+    it('User is able to comment before checkout - TC_CART_005', () => {
         productCatalog.addProduct();
         let attempts = 0;
         const maxAttempts = 5;
@@ -142,7 +142,7 @@ describe("Contact Us Test Cases", () => {
 
     });
 
-    it('User cannot checkout when no enter is no name on payment method', () => {
+    it('User cannot checkout when no enter is no name on payment method - TC_CART_006', () => {
         productCatalog.addProduct();
         let attempts = 0;
         const maxAttempts = 5;
@@ -171,7 +171,7 @@ describe("Contact Us Test Cases", () => {
         module.verifyErrorMessage();
     });
 
-    it('User cannot checkout when no enter is no card number on payment method', () => {
+    it('User cannot checkout when no enter is no card number on payment method - TC_CART_007', () => {
         productCatalog.addProduct();
         let attempts = 0;
         const maxAttempts = 5;
@@ -200,7 +200,7 @@ describe("Contact Us Test Cases", () => {
         module.verifyErrorMessage();
 
     });
-    it('User cannot checkout when no enter is no CVC  on payment method', () => {
+    it('User cannot checkout when no enter is no CVC  on payment method  - TC_CART_008', () => {
         productCatalog.addProduct();
         let attempts = 0;
         const maxAttempts = 5;
@@ -230,7 +230,7 @@ describe("Contact Us Test Cases", () => {
 
     });
 
-    it('User cannot checkout when no enter is no Expiration Date  on payment method', () => {
+    it('User cannot checkout when no enter is no Expiration Date  on payment method  - TC_CART_009', () => {
         productCatalog.addProduct();
         let attempts = 0;
         const maxAttempts = 5;
@@ -260,7 +260,7 @@ describe("Contact Us Test Cases", () => {
 
     });
 
-    it('User cannot checkout when special characters are entered on payment method', () => {
+    it('User cannot checkout when special characters are entered on payment method - TC_CART_010', () => {
         productCatalog.addProduct();
         let attempts = 0;
         const maxAttempts = 5;
@@ -290,7 +290,7 @@ describe("Contact Us Test Cases", () => {
 
     });
 
-    it('User cannnot checkout with an expired card', () => {
+    it('User cannnot checkout with an expired card - TC_CART_011', () => {
         productCatalog.addProduct();
         let attempts = 0;
         const maxAttempts = 5;
@@ -319,7 +319,7 @@ describe("Contact Us Test Cases", () => {
 
     });
 
-    it('User is able to download the invoice', () => {
+    it('User is able to download the invoice - - TC_CART_011', () => {
         productCatalog.addProduct();
         cy.get(module.proceedToCheckoutButton).click();
         let trimmedName;
@@ -351,7 +351,7 @@ describe("Contact Us Test Cases", () => {
                 cy.verifyInvoice(trimmedName, amount);
             });
     });
-    it('User is able to download the invoice once all products are added to the cart', () => {
+    it('User is able to download the invoice once all products are added to the cart - TC_CART_012', () => {
         productCatalog.addAllProducts();
         cy.get(module.proceedToCheckoutButton).click();
         let trimmedName;
@@ -384,7 +384,7 @@ describe("Contact Us Test Cases", () => {
                 cy.verifyInvoice(trimmedName, amount);
             });
     });
-    it('User can view the cart while logged out', () => {
+    it('User can view the cart while logged out - TC_CART_013', () => {
         cy.visit('https://www.automationexercise.com/')
         productCatalog.addProduct();
         let attempts = 0;
@@ -417,7 +417,7 @@ describe("Contact Us Test Cases", () => {
 
     });
 
-    it('User checks out a negative quantity of product', () => {
+    it('User checks out a negative quantity of product -  - TC_CART_014', () => {
         const negativeQuantity = -1
 
         cy.visit('https://www.automationexercise.com/products');
