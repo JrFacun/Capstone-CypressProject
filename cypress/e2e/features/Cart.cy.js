@@ -1,10 +1,10 @@
 import ProductCatalogPOM from '../../support/POM/general';
 import cartPage from '../../support/POM/cartPOM';
-import { verify } from 'tweetnacl';
 import { generateFakeSignupData } from '../../support/utils/userFaker';
 import RegisterPage from '../../support/POM/registrationPage';
 import ProductDetailViewPOM from '../../support/POM/productDetails';
 const el = new ProductDetailViewPOM;
+const productCatalog  = new ProductCatalogPOM();
 let testCaseTitle;
 const module = new cartPage;
 let user;
@@ -36,7 +36,7 @@ describe("Contact Us Test Cases", () => {
 
     it("Add to Cart UI Check", () => {
         cy.visit('https://www.automationexercise.com/cart');
-        ProductCatalogPOM.addProduct();
+        productCatalog.addProduct();
         const tableColumns = [
             module.productImageLabel,
             module.productDescriptionLabel,
@@ -96,7 +96,7 @@ describe("Contact Us Test Cases", () => {
     })
 
     it('User is able to checkout all products', () => {
-        ProductCatalogPOM.addAllProducts();
+        productCatalog.addAllProducts();
         cy.get(module.proceedToCheckoutButton).should('exist').and('be.visible').click();
         cy.get(module.placeOrderButton).should('be.visible').and('exist').click();
         cy.verifyButton(module.payButton);
@@ -106,13 +106,13 @@ describe("Contact Us Test Cases", () => {
     });
 
     it('User is able to remove all products', () => {
-        ProductCatalogPOM.addProduct();
+        productCatalog.addProduct();
         cy.clearCart();
         module.verifyEmptyCart();
     });
 
     it('User is able to comment before checkout', () => {
-        ProductCatalogPOM.addProduct();
+        productCatalog.addProduct();
         let attempts = 0;
         const maxAttempts = 5;
         cy.wrap(null).then(function retry() {
@@ -126,7 +126,7 @@ describe("Contact Us Test Cases", () => {
                     }
                     cy.log(`❌ Button not found - adding product (Attempt ${attempts})`);
                     cy.visit('https://www.automationexercise.com/')
-                    ProductCatalogPOM.addProduct();
+                    productCatalog.addProduct();
                     return retry(); // directly retry from here
                 }
             });
@@ -143,7 +143,7 @@ describe("Contact Us Test Cases", () => {
     });
 
     it('User cannot checkout when no enter is no name on payment method', () => {
-        ProductCatalogPOM.addProduct();
+        productCatalog.addProduct();
         let attempts = 0;
         const maxAttempts = 5;
         cy.wrap(null).then(function retry() {
@@ -157,7 +157,7 @@ describe("Contact Us Test Cases", () => {
                     }
                     cy.log(`❌ Button not found - adding product (Attempt ${attempts})`);
                     cy.visit('https://www.automationexercise.com/')
-                    ProductCatalogPOM.addProduct();
+                    productCatalog.addProduct();
                     return retry(); // directly retry from here
                 }
             });
@@ -172,7 +172,7 @@ describe("Contact Us Test Cases", () => {
     });
 
     it('User cannot checkout when no enter is no card number on payment method', () => {
-        ProductCatalogPOM.addProduct();
+        productCatalog.addProduct();
         let attempts = 0;
         const maxAttempts = 5;
         cy.wrap(null).then(function retry() {
@@ -186,7 +186,7 @@ describe("Contact Us Test Cases", () => {
                     }
                     cy.log(`❌ Button not found - adding product (Attempt ${attempts})`);
                     cy.visit('https://www.automationexercise.com/')
-                    ProductCatalogPOM.addProduct();
+                    productCatalog.addProduct();
                     return retry(); // directly retry from here
                 }
             });
@@ -201,7 +201,7 @@ describe("Contact Us Test Cases", () => {
 
     });
     it('User cannot checkout when no enter is no CVC  on payment method', () => {
-        ProductCatalogPOM.addProduct();
+        productCatalog.addProduct();
         let attempts = 0;
         const maxAttempts = 5;
         cy.wrap(null).then(function retry() {
@@ -215,7 +215,7 @@ describe("Contact Us Test Cases", () => {
                     }
                     cy.log(`❌ Button not found - adding product (Attempt ${attempts})`);
                     cy.visit('https://www.automationexercise.com/')
-                    ProductCatalogPOM.addProduct();
+                    productCatalog.addProduct();
                     return retry(); // directly retry from here
                 }
             });
@@ -231,7 +231,7 @@ describe("Contact Us Test Cases", () => {
     });
 
     it('User cannot checkout when no enter is no Expiration Date  on payment method', () => {
-        ProductCatalogPOM.addProduct();
+        productCatalog.addProduct();
         let attempts = 0;
         const maxAttempts = 5;
         cy.wrap(null).then(function retry() {
@@ -245,7 +245,7 @@ describe("Contact Us Test Cases", () => {
                     }
                     cy.log(`❌ Button not found - adding product (Attempt ${attempts})`);
                     cy.visit('https://www.automationexercise.com/')
-                    ProductCatalogPOM.addProduct();
+                    productCatalog.addProduct();
                     return retry(); // directly retry from here
                 }
             });
@@ -261,7 +261,7 @@ describe("Contact Us Test Cases", () => {
     });
 
     it('User cannot checkout when special characters are entered on payment method', () => {
-        ProductCatalogPOM.addProduct();
+        productCatalog.addProduct();
         let attempts = 0;
         const maxAttempts = 5;
         cy.wrap(null).then(function retry() {
@@ -275,7 +275,7 @@ describe("Contact Us Test Cases", () => {
                     }
                     cy.log(`❌ Button not found - adding product (Attempt ${attempts})`);
                     cy.visit('https://www.automationexercise.com/')
-                    ProductCatalogPOM.addProduct();
+                    productCatalog.addProduct();
                     return retry(); // directly retry from here
                 }
             });
@@ -291,7 +291,7 @@ describe("Contact Us Test Cases", () => {
     });
 
     it('User cannnot checkout with an expired card', () => {
-        ProductCatalogPOM.addProduct();
+        productCatalog.addProduct();
         let attempts = 0;
         const maxAttempts = 5;
         cy.wrap(null).then(function retry() {
@@ -305,7 +305,7 @@ describe("Contact Us Test Cases", () => {
                     }
                     cy.log(`❌ Button not found - adding product (Attempt ${attempts})`);
                     cy.visit('https://www.automationexercise.com/')
-                    ProductCatalogPOM.addProduct();
+                    productCatalog.addProduct();
                     return retry(); // directly retry from here
                 }
             });
@@ -320,7 +320,7 @@ describe("Contact Us Test Cases", () => {
     });
 
     it('User is able to download the invoice', () => {
-        ProductCatalogPOM.addProduct();
+        productCatalog.addProduct();
         cy.get(module.proceedToCheckoutButton).click();
         let trimmedName;
         let amount;
@@ -352,7 +352,7 @@ describe("Contact Us Test Cases", () => {
             });
     });
     it('User is able to download the invoice once all products are added to the cart', () => {
-        ProductCatalogPOM.addAllProducts();
+        productCatalog.addAllProducts();
         cy.get(module.proceedToCheckoutButton).click();
         let trimmedName;
         let amount;
@@ -386,7 +386,7 @@ describe("Contact Us Test Cases", () => {
     });
     it('User can view the cart while logged out', () => {
         cy.visit('https://www.automationexercise.com/')
-        ProductCatalogPOM.addProduct();
+        productCatalog.addProduct();
         let attempts = 0;
         const maxAttempts = 5;
         cy.wrap(null).then(function retry() {
@@ -400,7 +400,7 @@ describe("Contact Us Test Cases", () => {
                     }
                     cy.log(`❌ Button not found - adding product (Attempt ${attempts})`);
                     cy.visit('https://www.automationexercise.com/')
-                    ProductCatalogPOM.addProduct();
+                    productCatalog.addProduct();
                     return retry(); // directly retry from here
                 }
             });
@@ -430,9 +430,9 @@ describe("Contact Us Test Cases", () => {
         // Intercept the exact request
         cy.intercept('POST', `**/add_to_cart/2?quantity=${negativeQuantity}`).as('addToCart');
         cy.get(ProductDetailViewPOM.mdlSuccess).should('not.be.visible');
-        cy.get(ProductCatalogPOM.messageLabel).should('exist')
+        cy.get(productCatalog.messageLabel).should('exist')
             .and('contain', 'Your product has been added to cart.');
-        cy.get(ProductCatalogPOM.viewCartLink).click({ force: true });
+        cy.get(productCatalog.viewCartLink).click({ force: true });
         cy.get(module.proceedToCheckoutButton).click();
         cy.get(module.placeOrderButton).should('be.visible').and('exist').click();
         cy.verifyButton(module.payButton);
