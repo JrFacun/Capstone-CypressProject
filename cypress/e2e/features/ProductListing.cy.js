@@ -9,7 +9,7 @@ describe('Product Search', { testIsolation: false }, () => {
         //cy.get('a[href="/products"]').click();
     });
 
-    it.only("Verify Search Bar Functionality - Display of Relevant Items (with API)", () => {
+    it("Verify Search Bar Functionality - Display of Relevant Items (with API)", () => {
         cy.snapshot('Search a Product then Verify Search Results')
         const keyword = 'Tshirt'; // Item to be searched
 
